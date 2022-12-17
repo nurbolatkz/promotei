@@ -1,0 +1,10 @@
+django==4.0.4
+djangorestframework==3.13.1
+psycopg2-binary==2.9.3
+flake8==4.0.1
+django-environ==0.8.1
+gunicorn==20.1.0
+Pillow==9.1.1
+requests==2.22.0
+django-extensions==3.1.5
+mixer==7.2.2
