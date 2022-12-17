@@ -80,6 +80,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'promotei.wsgi.application'
+AUTH_USER_MODEL = 'user.CustomUser'
 
 
 # Database
