@@ -2,7 +2,9 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from user.models import CustomUser, UserProfile
 
-# Register your models here.
+# Register your models here
+'''
+
 class CustomUserAdmin(UserAdmin):
     #add_form = CustomUserCreationForm
     #form = CustomUserChangeForm
@@ -41,6 +43,7 @@ class CustomUserAdmin(UserAdmin):
     )
     search_fields = ('email',)
     ordering = ('email',)
-
-admin.site.register(CustomUser, CustomUserAdmin)
+'''
+#admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(CustomUser)
 admin.site.register(UserProfile)
