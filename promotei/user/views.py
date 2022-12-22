@@ -9,10 +9,13 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import login
+from rest_framework.generics import get_object_or_404
 
 from user.models import CustomUser, UserProfile
+from document.models import IdentityNumber
 from user.serializers import (UserLoginSerializer, UserProfileSerializer,
                               RegisterSerializer,  UserSerializer)
+
 
 #register
 #login
@@ -71,6 +74,19 @@ class UserProfileViewSet(viewsets.ViewSet):
         queryset = UserProfile.objects.all()
         serializer = UserProfileSerializer(queryset, many=True)
         return Response(serializer.data)
+    
+    def create(self, request, *args, **kwargs):
+        user_instance = get_object_or_404(CustomUser, email=request.user)
+        print(request.data['indentity_number'])
+        user_identityNumber = get_object_or_404(IdentityNumber,indentity_number=request.data['indentity_number'])
+        if user_identityNumber:
+            print('worked')
+        serializer = UserProfileSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_instance()

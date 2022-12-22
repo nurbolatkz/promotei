@@ -6,7 +6,7 @@ from django.utils.translation import gettext as _
 from django.contrib.auth.models import UserManager
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
-
+from rest_framework.generics import get_object_or_404
 
 class CustomUserManager(BaseUserManager):
     """
@@ -14,20 +14,25 @@ class CustomUserManager(BaseUserManager):
     for authentication instead of usernames.
     """
 
-    def create_user(self, email, password, phone_number, **extra_fields):
+    def create_user(self, email,indentity_number, password, role, phone_number, **extra_fields):
         if not email:
             raise ValueError(_('Users must have an email address'))
         if not phone_number:
             raise ValueError(_('Users must have a phone_number'))
+        user_identityNumber = get_object_or_404(IdentityNumber,id=indentity_number)
+        
         email = self.normalize_email(email)
         user = self.model(email=email,
                           phone_number= phone_number,
+                          indentity_number=user_identityNumber,
+                          role=role,
                           **extra_fields)
+    
         user.set_password(password)
         user.save()
         return user
 
-    def create_superuser(self, email, password, phone_number, **extra_fields):
+    def create_superuser(self, email,indentity_number, password, role, phone_number, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
@@ -36,14 +41,21 @@ class CustomUserManager(BaseUserManager):
             raise ValueError(_('Superuser must have is_staff=True.'))
         if extra_fields.get('is_superuser') is not True:
             raise ValueError(_('Superuser must have is_superuser=True.'))
-        return self.create_user(email, password, phone_number,**extra_fields)
+        return self.create_user(email,indentity_number, password, role, phone_number, **extra_fields)
     
     
 # Create your models here.
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    class UserRolesEnum(models.TextChoices):
+        RENTER = 'RENTER'
+        RENT_RECEIVER = 'RENT_RECEIVER'
+        
+        
     email = models.EmailField(_('email address'), unique=True)
     phone_number = models.CharField(_("phone number"), validators=[RegexValidator(regex=r"^\+?77(\d{9})$", message=("Неправильный номер телефона"))], max_length=50, unique=True,blank=True)
     password = models.CharField(max_length=100)
+    role = models.CharField(max_length=30, choices=UserRolesEnum.choices, null=True, blank=True)
+    indentity_number = models.ForeignKey(IdentityNumber, on_delete=models.CASCADE)
     is_staff = models.BooleanField(
         _("staff status"),
         default=False,
@@ -62,7 +74,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["phone_number", 'password']
+    REQUIRED_FIELDS = ["phone_number", 'password', 'indentity_number', 'role']
     
     objects = CustomUserManager()
    
@@ -71,20 +83,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 class UserProfile(models.Model):
-    class UserRolesEnum(models.TextChoices):
-        RENTER = 'RENTER'
-        RENT_RECEIVER = 'RENT_RECEIVER'
-        
-    
     class GenderChoices(models.TextChoices):
         MALE = 'MALE'
         FEMALE = 'FEMALE'
-        
-        
+          
     user = models.OneToOneField(CustomUser, related_name='profile',unique=True, on_delete=models.CASCADE)
     indentity_number = models.ForeignKey(IdentityNumber, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='photos/', null=True, blank=True)
-    role = models.CharField(max_length=30, choices=UserRolesEnum.choices, null=True, blank=True)
     gender = models.CharField(max_length=10, choices=GenderChoices.choices, null=True, blank=True)
-    
     
