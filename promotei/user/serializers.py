@@ -22,7 +22,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 
                   'user',
                   'indentity_number', 
-                  'role']
+                  ]
 
 
 class RegisterSerializer(serializers.ModelSerializer):
