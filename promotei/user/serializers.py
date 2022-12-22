@@ -3,23 +3,25 @@ from rest_framework import serializers
 from django.core.validators import RegexValidator
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
+from document.serializers import IdentityNumberSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['id', 'phone_number', 'email', 'role' ]
+        fields = ['id', 'phone_number', 'email' ]
         
         
 class UserProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    indentity_number= IdentityNumberSerializer(read_only=True)
     class Meta:
-        model = CustomUser
+        model = UserProfile
         fields = ['id', 
+                  'user',
                   'indentity_number', 
-                  'date_of_birth', 
-                  'first_name', 
-                  'last_name', 
-                  'image' ]
+                  'image', 
+                  'role']
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -35,7 +37,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('phone_number', 'email', 'password', 'password2', 'role')
+        fields = ('phone_number', 'email', 'password', 'password2')
         extra_kwargs = {'phone_number': {'write_only': True},
                         'password1': {'required': True},
                         'password2': {'required': True},

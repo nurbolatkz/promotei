@@ -1,9 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 from document.models import IdentityNumber
 from django.core.validators import RegexValidator
-from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import UserManager
@@ -44,15 +41,24 @@ class CustomUserManager(BaseUserManager):
     
 # Create your models here.
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    class UserRolesEnum(models.TextChoices):
-        RENTER = 'RENTER'
-        RENT_RECEIVER = 'RENT_RECEIVER'
-        
-    #username_validator = UnicodeUsernameValidator()
     email = models.EmailField(_('email address'), unique=True)
     phone_number = models.CharField(_("phone number"), validators=[RegexValidator(regex=r"^\+?77(\d{9})$", message=("Неправильный номер телефона"))], max_length=50, unique=True,blank=True)
     password = models.CharField(max_length=100)
-    role = ArrayField(models.CharField(max_length=20, choices=UserRolesEnum.choices), default=list, blank=True)
+    is_staff = models.BooleanField(
+        _("staff status"),
+        default=False,
+        help_text=_("Designates whether the user can log into this admin site."),
+    )
+    is_active = models.BooleanField(
+        _("active"),
+        default=True,
+        help_text=_(
+            "Designates whether this user should be treated as active. "
+            "Unselect this instead of deleting accounts."
+        ),
+    )
+    is_secure = models.BooleanField(_("secure"), default=False)
+    is_superuser = models.BooleanField(default=False)
     
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "email"
@@ -65,15 +71,20 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 class UserProfile(models.Model):
+    class UserRolesEnum(models.TextChoices):
+        RENTER = 'RENTER'
+        RENT_RECEIVER = 'RENT_RECEIVER'
+        
+    
     class GenderChoices(models.TextChoices):
         MALE = 'MALE'
         FEMALE = 'FEMALE'
+        
+        
     user = models.OneToOneField(CustomUser, related_name='profile',unique=True, on_delete=models.CASCADE)
     indentity_number = models.ForeignKey(IdentityNumber, on_delete=models.CASCADE)
-    date_of_birth = models.DateField(null=True)
-    first_name =  models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
     image = models.ImageField(upload_to='photos/', null=True, blank=True)
+    role = models.CharField(max_length=30, choices=UserRolesEnum.choices, null=True, blank=True)
     gender = models.CharField(max_length=10, choices=GenderChoices.choices, null=True, blank=True)
     
     
