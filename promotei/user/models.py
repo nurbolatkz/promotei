@@ -19,6 +19,7 @@ class CustomUserManager(BaseUserManager):
             raise ValueError(_('Users must have an email address'))
         if not phone_number:
             raise ValueError(_('Users must have a phone_number'))
+        
         user_identityNumber = get_object_or_404(IdentityNumber,id=indentity_number)
         
         email = self.normalize_email(email)
@@ -87,7 +88,7 @@ class UserProfile(models.Model):
         MALE = 'MALE'
         FEMALE = 'FEMALE'
           
-    user = models.OneToOneField(CustomUser, related_name='profile',unique=True, on_delete=models.CASCADE)
+    user = models.OneToOneField(CustomUser, related_name='profile',primary_key=True,unique=True, on_delete=models.CASCADE)
     indentity_number = models.ForeignKey(IdentityNumber, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='photos/', null=True, blank=True)
     gender = models.CharField(max_length=10, choices=GenderChoices.choices, null=True, blank=True)

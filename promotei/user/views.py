@@ -75,28 +75,7 @@ class UserProfileViewSet(viewsets.ViewSet):
         serializer = UserProfileSerializer(queryset, many=True)
         return Response(serializer.data)
     
-    def create(self, request, *args, **kwargs):
-        user_instance = get_object_or_404(CustomUser, email=request.user)
-        print(request.data['indentity_number'])
-        user_identityNumber = get_object_or_404(IdentityNumber,indentity_number=request.data['indentity_number'])
-        if user_identityNumber:
-            print('worked')
-        serializer = UserProfileSerializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
-
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_instance()
         serializer = UserProfileSerializer(instance)
-        return Response(serializer.data)
-
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_instance()
-        serializer = UserProfileSerializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
         return Response(serializer.data)

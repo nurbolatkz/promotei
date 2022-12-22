@@ -19,7 +19,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     indentity_number= IdentityNumberSerializer(read_only=True)
     class Meta:
         model = UserProfile
-        fields = ['id', 
+        fields = [
                   'user',
                   'indentity_number', 
                   ]
@@ -52,22 +52,34 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError({"password": "Password fields didn't match."})
-
-        return attrs
-    def create(self, validated_data):
-        user_identityNumber = get_object_or_404(IdentityNumber,indentity_number=validated_data['indentity_number'])
+        user_identityNumber = get_object_or_404(IdentityNumber,indentity_number=attrs['indentity_number'])
+        attrs['indentity_number'] = user_identityNumber
+        try:
+            user = CustomUser.objects.get(indentity_number=user_identityNumber)
+            if user:
+                isFound = True
+        except:
+            isFound = False
+        if isFound:
+            raise serializers.ValidationError({"user": "with this iin already exist"})
+        else:
+            return attrs
         
-
+        
+    def create(self, validated_data):
         user = CustomUser.objects.create(
-            indentity_number=user_identityNumber,
+            indentity_number=validated_data['indentity_number'],
             phone_number=validated_data['phone_number'],
             email=validated_data['email'],
-            role=validated_data['role']
-        )
+            role=validated_data['role'])
+            
         user.set_password(validated_data['password'])
-        user.save()        
+        user.save()
+            
+        UserProfile.objects.create(user=user, indentity_number=validated_data['indentity_number'])
+    
         return user
-
+        
         
 class UserLoginSerializer(serializers.Serializer):
     email =  serializers.CharField(max_length=155, write_only=True, required=True)
@@ -95,5 +107,4 @@ class UserLoginSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
-    
     

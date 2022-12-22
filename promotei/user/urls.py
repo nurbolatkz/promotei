@@ -3,7 +3,7 @@ from rest_framework import routers
 from user.views import RegisterView, CustomAuthToken, Logout, UserProfileViewSet
 
 user_list = UserProfileViewSet.as_view({'get': 'list'})
-user_profile_create = UserProfileViewSet.as_view({'post': 'create'})
+user_profile_create = UserProfileViewSet.as_view({'get': 'retrieve'})
 
 urlpatterns = [
     path('auth/register/', RegisterView.as_view(), name='register'),
