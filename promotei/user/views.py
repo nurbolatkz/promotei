@@ -17,8 +17,7 @@ from user.serializers import (UserLoginSerializer, UserProfileSerializer,
                               RegisterSerializer,  UserSerializer)
 
 
-#register
-#login
+
 #reset_password
 #create_profile
 #edit_profile
@@ -75,7 +74,14 @@ class UserProfileViewSet(viewsets.ViewSet):
         serializer = UserProfileSerializer(queryset, many=True)
         return Response(serializer.data)
     
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_instance()
-        serializer = UserProfileSerializer(instance)
+    def retrieve(self,request,idendity_id=None, *args, **kwargs):
+        if idendity_id is None:
+            instance = self.get_instance()
+            serializer = UserProfileSerializer(instance)
+            
+        else:
+            
+            identityNumberobj = IdentityNumber.objects.get(indentity_number=idendity_id)
+            instance = get_object_or_404(UserProfile,indentity_number=identityNumberobj)
+            serializer =   UserProfileSerializer(instance)
         return Response(serializer.data)
