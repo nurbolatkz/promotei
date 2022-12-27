@@ -7,9 +7,10 @@ from document.models import IdentityNumber
 
 # Create your models here.
 class StatusChoices(models.TextChoices):
-        SENDED = 'SENDED'
-        RECEIVED = 'RECEIVED'
+        SENDED = "SENDED"
+        RECEIVED = "RECEIVED"
         ACCEPTED = "ACCEPTED"
+        DECLINED = "DECLINED"
 
 
 class Contract(models.Model):

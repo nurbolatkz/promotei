@@ -5,7 +5,6 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
-from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import login
@@ -17,11 +16,6 @@ from user.serializers import (UserLoginSerializer, UserProfileSerializer,
                               RegisterSerializer,  UserSerializer)
 
 
-
-#reset_password
-#create_profile
-#edit_profile
-#yesterday
 
 class CustomAuthToken(ObtainAuthToken):
     
@@ -36,6 +30,8 @@ class CustomAuthToken(ObtainAuthToken):
             'user_id': user.pk,
             'email': user.email
         })
+        
+        
 
 class RegisterView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
@@ -53,8 +49,8 @@ class RegisterView(generics.CreateAPIView):
 
 
 class Logout(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, format=None):
-        permission_classes = [IsAuthenticated]
         # simply delete the token to force a login
         if request.user.is_authenticated:
             request.user.auth_token.delete()
@@ -62,6 +58,8 @@ class Logout(generics.CreateAPIView):
         else:
             Response('User is not autenticated')
             
+
+
 class UserProfileViewSet(viewsets.ViewSet):
     queryset = UserProfile.objects.all()
     permission_classes = (permissions.IsAuthenticated,)
