@@ -73,7 +73,7 @@ class UserProfileViewSet(viewsets.ViewSet):
         return Response(serializer.data)
     
     def retrieve(self,request, *args, **kwargs):
-        if request.query_params['with']:
+        if 'with' in request.query_params.keys():
             idendity_id = request.query_params['with']
             print(idendity_id)
             identityNumberobj = IdentityNumber.objects.get(indentity_number=idendity_id)

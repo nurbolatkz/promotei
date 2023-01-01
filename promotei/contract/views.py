@@ -15,7 +15,7 @@ class CreateContract(generics.CreateAPIView):
         response = super().create(request, *args, **kwargs)
         return Response({
             'status': 200,
-            'message': 'Successfully registered user',
+            'message': 'Successfully created contract, to send contract receiver approve by esp',
             'data': response.data
         })
     

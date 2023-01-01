@@ -2,7 +2,7 @@ from rest_framework import serializers
 from contract.models import Contract
 from user.models import CustomUser
 from document.models import IdentityNumber
-
+from rest_framework.generics import get_object_or_404
 class ContractSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contract
@@ -16,12 +16,13 @@ class ContractSerializer(serializers.ModelSerializer):
     
     
     def create(self, validated_data):
-        print(validated_data['renter'])
-        #renter = IdentityNumber.objects.get(pk=validated_data['renter'])
-        #receiver = IdentityNumber.objects.get(pk=validated_data['receiver'])
+        user = self.context.get('request').user
+        if user:
+            renter = user
+        receiver = CustomUser.objects.get(indentity_number=validated_data['receiver'])
         contract = Contract.objects.create(content=validated_data['content'],
-                                           renter=validated_data['renter'],
-                                           receiver=validated_data['receiver'])
+                                           renter=renter,
+                                           receiver=receiver)
         contract.save()
         return contract
         
