@@ -15,13 +15,31 @@ class UserSerializer(serializers.ModelSerializer):
         
         
 class UserProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    indentity_number= IdentityNumberSerializer(read_only=True)
+    phone_number = serializers.CharField(source='user.phone_number')
+    email = serializers.EmailField(source='user.email')
+    role = serializers.CharField(source='user.role')
+    indentity_number = serializers.CharField(source='indentity_number.indentity_number')
+    first_name  = serializers.CharField(source='indentity_number.first_name')
+    date_of_birth = serializers.CharField(source='indentity_number.date_of_birth')
+    last_name = serializers.CharField(source='indentity_number.last_name')
+    patronymic = serializers.CharField(source='indentity_number.patronymic')
+    region = serializers.CharField(source='indentity_number.region')
+    city = serializers.CharField(source='indentity_number.city')
+    
     class Meta:
         model = UserProfile
         fields = [
-                  'user',
+                  'first_name',
                   'indentity_number', 
+                  'first_name',
+                  'role',
+                  'email',
+                  'phone_number',
+                  'date_of_birth',
+                  'last_name',
+                  'patronymic',
+                  'region',
+                  'city'
                   ]
 
 
