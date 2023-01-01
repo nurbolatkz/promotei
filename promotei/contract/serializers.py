@@ -3,10 +3,18 @@ from contract.models import Contract
 from user.models import CustomUser
 from document.models import IdentityNumber
 from rest_framework.generics import get_object_or_404
+
+
 class ContractSerializer(serializers.ModelSerializer):
+    receiver = serializers.CharField( required=True)
+    is_signed = serializers.BooleanField(read_only=True)
     class Meta:
         model = Contract
-        fields = '__all__'
+        fields = [
+            'receiver',
+            'content',
+            'is_signed'
+        ]
         
         
     def validate(self, attrs):
@@ -19,10 +27,15 @@ class ContractSerializer(serializers.ModelSerializer):
         user = self.context.get('request').user
         if user:
             renter = user
-        receiver = CustomUser.objects.get(indentity_number=validated_data['receiver'])
+        
+        receiver_identity_number = get_object_or_404(IdentityNumber,
+                                                     indentity_number=validated_data['receiver'])
+        
+        receiver = CustomUser.objects.get(indentity_number=receiver_identity_number)
         contract = Contract.objects.create(content=validated_data['content'],
                                            renter=renter,
                                            receiver=receiver)
         contract.save()
+        
         return contract
         
