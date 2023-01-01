@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from user.views import RegisterView, CustomAuthToken, Logout, UserProfileViewSet
 
 user_list = UserProfileViewSet.as_view({'get': 'list'})
@@ -10,5 +10,5 @@ urlpatterns = [
     path('logout/', Logout.as_view(), name='logout'),
     path('users/', user_list, name='users'),
     path('userprofile/', userProfile_get_create, name='create'),
-    path('search/<str:idendity_id>', userProfile_get_create, name='get')
+    path('search', userProfile_get_create, name='get')
 ]
