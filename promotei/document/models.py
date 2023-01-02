@@ -1,4 +1,5 @@
 from django.db import models
+import hashlib
 
 # Create your models here.
 class IdentityNumber(models.Model):
@@ -12,7 +13,15 @@ class IdentityNumber(models.Model):
 
 class Esp(models.Model):
     indentity_number = models.ForeignKey(IdentityNumber,on_delete=models.CASCADE)
-    esp = models.FileField(unique=True)
+    esp = models.FileField()
+    hash = models.CharField(default=None, max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     expiration_date = models.DateTimeField()
+    
+    def save(self, *args, **kwargs):
+        md5 = hashlib.md5()
+        content = bytes(self.esp.read())
+        md5.update(content)
+        self.hash =  md5.hexdigest()
+        super(Esp, self).save(*args, **kwargs)

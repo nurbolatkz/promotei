@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from contract.models import Contract
 from contract.serializers import ContractSerializer
 from rest_framework.decorators import action
+from document.utils import check_esp
 
 
 class CreateContract(generics.CreateAPIView):
@@ -31,12 +32,19 @@ class ContractViewSet(viewsets.ViewSet):
     def set_signed(self, request, contract_id=None):
         if contract_id is None:
             return Response({'Error': 'Contract id is not provided'}, 404)
-        try:
-            contract = self.queryset.get(pk=contract_id)
-            contract.is_signed = True
-            contract.save()
-        except:
-            return Response('Contract with this id not found',404)
+       
+        
+        content = request.FILES['esp']
+        if check_esp(content):
+            try:
+                contract = self.queryset.get(pk=contract_id)
+                contract.is_signed = True
+                contract.save()
+            except:
+                return Response('Contract with this id not found',404)
+        else:
+            return Response('ESP does not correctly entered or check expiration date', 404)
+        
         
         serializer = ContractSerializer(contract)
         return Response(serializer.data, 201)      
