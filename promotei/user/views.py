@@ -75,8 +75,10 @@ class UserProfileViewSet(viewsets.ViewSet):
     def retrieve(self,request, *args, **kwargs):
         if 'with' in request.query_params.keys():
             idendity_id = request.query_params['with']
-            print(idendity_id)
-            identityNumberobj = IdentityNumber.objects.get(indentity_number=idendity_id)
+            try:
+                identityNumberobj = IdentityNumber.objects.get(indentity_number=idendity_id)
+            except:
+                return Response('User With this identityNumber does not exist', 404)
             instance = get_object_or_404(UserProfile,indentity_number=identityNumberobj)
             serializer =   UserProfileSerializer(instance)
         else:
