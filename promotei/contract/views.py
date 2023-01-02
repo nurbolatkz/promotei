@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from contract.models import Contract
 from contract.serializers import ContractSerializer
+from rest_framework.decorators import action
 
 
 class CreateContract(generics.CreateAPIView):
@@ -20,3 +21,22 @@ class CreateContract(generics.CreateAPIView):
             'data': response.data
         })
     
+
+class ContractViewSet(viewsets.ViewSet):
+    serializer_class = ContractSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Contract.objects.all()
+    
+    @action(detail=True, methods=['get'])
+    def set_signed(self, request, contract_id=None):
+        if contract_id is None:
+            return Response({'Error': 'Contract id is not provided'}, 404)
+        try:
+            contract = self.queryset.get(pk=contract_id)
+            contract.is_signed = True
+            contract.save()
+        except:
+            return Response('Contract with this id not found',404)
+        
+        serializer = ContractSerializer(contract)
+        return Response(serializer.data, 201)      

@@ -11,6 +11,7 @@ class ContractSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contract
         fields = [
+            'id',
             'receiver',
             'content',
             'is_signed'
