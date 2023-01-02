@@ -8,13 +8,15 @@ from rest_framework.generics import get_object_or_404
 class ContractSerializer(serializers.ModelSerializer):
     receiver = serializers.CharField( required=True)
     is_signed = serializers.BooleanField(read_only=True)
+    status = serializers.CharField(read_only=True)
     class Meta:
         model = Contract
         fields = [
             'id',
             'receiver',
             'content',
-            'is_signed'
+            'is_signed',
+            'status'
         ]
         
         

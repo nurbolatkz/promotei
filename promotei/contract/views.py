@@ -39,6 +39,8 @@ class ContractViewSet(viewsets.ViewSet):
             try:
                 contract = self.queryset.get(pk=contract_id)
                 contract.is_signed = True
+                contract.status = 'SENDED'
+                # SEND NOTITIFICATION
                 contract.save()
             except:
                 return Response('Contract with this id not found',404)
@@ -47,4 +49,52 @@ class ContractViewSet(viewsets.ViewSet):
         
         
         serializer = ContractSerializer(contract)
-        return Response(serializer.data, 201)      
+        return Response(serializer.data, 201)
+    
+    @action(detail=True, methods=['get'])
+    def set_accepted(self, request, contract_id=None):
+        if contract_id is None:
+            return Response({'Error': 'Contract id is not provided'}, 404)
+       
+        
+        content = request.FILES['esp']
+        if check_esp(content):
+            try:
+                contract = self.queryset.get(pk=contract_id)
+                if contract.is_signed == True:
+                    contract.status = 'ACCEPTED'
+                    #SEND_MESSAGE
+                    # TEST receiver with request user
+                contract.save()
+            except:
+                return Response('Contract with this id not found',404)
+        else:
+            return Response('ESP does not correctly entered or check expiration date', 404)
+        
+        
+        serializer = ContractSerializer(contract)
+        return Response(serializer.data, 201)
+    
+    @action(detail=True, methods=['get'])
+    def set_declined(self, request, contract_id=None):
+        if contract_id is None:
+            return Response({'Error': 'Contract id is not provided'}, 404)
+       
+        
+        content = request.FILES['esp']
+        if check_esp(content):
+            try:
+                contract = self.queryset.get(pk=contract_id)
+                if contract.is_signed == True:
+                    contract.status = 'DECLINED'
+                    #SEND_MESSAGE
+                    # TEST receiver with request user
+                contract.save()
+            except:
+                return Response('Contract with this id not found',404)
+        else:
+            return Response('ESP does not correctly entered or check expiration date', 404)
+        
+        
+        serializer = ContractSerializer(contract)
+        return Response(serializer.data, 201)       
