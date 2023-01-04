@@ -22,6 +22,7 @@ class CustomAuthToken(ObtainAuthToken):
         serializer = UserLoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+        #print(user)
         token, created = Token.objects.get_or_create(user=user)
         login(request, user)
         return Response({
