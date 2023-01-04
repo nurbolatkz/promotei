@@ -124,4 +124,22 @@ class UserLoginSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
+
+class UserProrfileShortInfoSerializer(serializers.ModelSerializer):
+    phone_number = serializers.CharField(source='user.phone_number')
+    email = serializers.EmailField(source='user.email')
+    indentity_number = serializers.CharField(source='indentity_number.indentity_number')
+    first_name  = serializers.CharField(source='indentity_number.first_name')
+    last_name = serializers.CharField(source='indentity_number.last_name')
     
+    class Meta:
+        model = UserProfile
+        fields = [
+                  'first_name',
+                  'indentity_number', 
+                  'first_name',
+                  'last_name',
+                  'email',
+                  'phone_number',
+                  ]
