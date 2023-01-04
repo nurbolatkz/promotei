@@ -3,7 +3,6 @@ from rest_framework import serializers
 from django.core.validators import RegexValidator
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
-from document.serializers import IdentityNumberSerializer
 from document.models import IdentityNumber
 from rest_framework.generics import get_object_or_404
 
