@@ -8,7 +8,7 @@ from rest_framework.decorators import action
 
 
 class MessageViewSet(viewsets.ViewSet):
-    queryset = Message.object.all
+    queryset = Message.objects.all
     permission_classes = [IsAuthenticated]
    
 
