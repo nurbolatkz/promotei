@@ -1,6 +1,12 @@
 from message.models import Message
+from user.models import UserProfile
 
 def create_or_update_message(sender, receiver, contract):
+    try:
+        sender = UserProfile.objects.get(user=sender)
+        receiver = UserProfile.objects.get(user=receiver)
+    except:
+        return
     message_content = ''
     if contract.status == 'SENDED':
         message_content = f'{sender.first_name} {sender.last_name} +  вам отправил(-а) договор'

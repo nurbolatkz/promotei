@@ -5,7 +5,7 @@ from contract.models import Contract
 from contract.serializers import ContractSerializer
 from rest_framework.decorators import action
 from document.utils import check_esp
-
+from message.utils import create_or_update_message
 
 class CreateContract(generics.CreateAPIView):
     queryset = Contract.objects.all()
@@ -39,7 +39,6 @@ class ContractViewSet(viewsets.ViewSet):
                 contract = self.queryset.get(pk=contract_id)
                 contract.is_signed = True
                 contract.status = 'SENDED'
-                # SEND NOTITIFICATION
                 contract.save()
             except:
                 return Response('Contract with this id not found',404)
@@ -62,9 +61,11 @@ class ContractViewSet(viewsets.ViewSet):
                 contract = self.queryset.get(pk=contract_id)
                 if contract.is_signed == True:
                     contract.status = 'ACCEPTED'
-                    #SEND_MESSAGE
                     # TEST receiver with request user
                 contract.save()
+                message = create_or_update_message(sender=contract.sender, receiver=contract.receiver, contract=contract)
+                if message:
+                    message.save()
             except:
                 return Response('Contract with this id not found',404)
         else:
@@ -89,6 +90,9 @@ class ContractViewSet(viewsets.ViewSet):
                     #SEND_MESSAGE
                     # TEST receiver with request user
                 contract.save()
+                message = create_or_update_message(sender=contract.sender, receiver=contract.receiver, contract=contract)
+                if message:
+                    message.save()
             except:
                 return Response('Contract with this id not found',404)
         else:

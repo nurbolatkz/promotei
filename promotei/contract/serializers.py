@@ -3,6 +3,7 @@ from contract.models import Contract
 from user.models import CustomUser
 from document.models import IdentityNumber
 from rest_framework.generics import get_object_or_404
+from message.utils import create_or_update_message
 
 
 class ContractSerializer(serializers.ModelSerializer):
@@ -39,6 +40,9 @@ class ContractSerializer(serializers.ModelSerializer):
                                            renter=renter,
                                            receiver=receiver)
         contract.save()
+        message = create_or_update_message(sender=user, receiver=receiver,contract=contract)
+        if message:
+            message.save()
         
         return contract
         
