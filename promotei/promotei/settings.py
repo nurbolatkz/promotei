@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'document',
     'user',
     'contract',
+    'message',
     #3rd party apps
     'rest_framework',
     'rest_framework.authtoken',
