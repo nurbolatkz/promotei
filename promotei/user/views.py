@@ -1,6 +1,5 @@
 
 from rest_framework import generics, permissions, viewsets
-from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -13,7 +12,7 @@ from rest_framework.generics import get_object_or_404
 from user.models import CustomUser, UserProfile
 from document.models import IdentityNumber
 from user.serializers import (UserLoginSerializer, UserProfileSerializer,
-                              RegisterSerializer,  UserSerializer)
+                              RegisterSerializer)
 
 
 
