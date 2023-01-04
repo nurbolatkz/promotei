@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('user.urls')),
     path('',include('contract.urls')),
+    path('', include('message.urls')),
     path('', include(router.urls)),
 ]
 
