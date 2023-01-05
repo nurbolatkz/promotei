@@ -6,7 +6,8 @@ from contract.serializers import ContractSerializer
 from rest_framework.decorators import action
 from document.utils import check_esp
 from message.utils import create_or_update_message
-from message.models import Message
+from django.http import FileResponse
+import pathlib
 
 class CreateContract(generics.CreateAPIView):
     queryset = Contract.objects.all()
@@ -104,4 +105,20 @@ class ContractViewSet(viewsets.ViewSet):
         
         
         serializer = ContractSerializer(contract)
-        return Response(serializer.data, 201)       
+        return Response(serializer.data, 201)
+    
+    def contract_download(self, request, contract_id, *args, **kwargs):
+        if contract_id is None:
+            return Response({'Error': 'contract was not provided'})
+        try:
+                contract = self.queryset.get(pk=contract_id, receiver=request.user)
+               
+        except:
+                return Response('Contract with this id not found',404)
+        content = contract.content
+        extension = pathlib.Path(content.name).suffix
+        filename_with_extension = "{0}{1}".format('Договор', extension)
+        print('contract -', filename_with_extension)
+
+        return FileResponse(content.open(), as_attachment=True, filename=filename_with_extension)
+        
