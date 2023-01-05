@@ -7,12 +7,15 @@ def create_or_update_message(sender, receiver, contract):
         receiver = UserProfile.objects.get(user=receiver)
     except:
         return
+    
     message_content = ''
-    if contract.status == 'SENDED':
-        message_content = f'{sender.first_name} {sender.last_name} +  вам отправил(-а) договор'
+    if contract.status == 'CREATED':
+        message_content = f'{sender.indentity_number.first_name} {sender.indentity_number.last_name}  создал договор'  
+    elif contract.status == 'SENDED':
+        message_content = f'{sender.indentity_number.first_name} {sender.indentity_number.last_name}  вам отправил(-а) договор'
     elif contract.status == 'ACCEPTED':
-        message_content = f'{sender.first_name} {sender.last_name} +  вам принял(-а) договор'
-        message =  Message.objects.filter(sender=sender, contract=contract, receiver=receiver)
+        message_content = f'{sender.indentity_number.first_name} {sender.indentity_number.last_name}  вам принял(-а) договор'
+        message =  Message.objects.get(sender=sender, contract=contract, receiver=receiver)
         if message:
             message.msg_content =  message_content
             message.save()

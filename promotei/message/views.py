@@ -18,14 +18,17 @@ class MessageViewSet(viewsets.ViewSet):
 
     def list(self, request, *args, **kwargs):
         filtered_by_receiver = self.queryset.filter(receiver=self.get_instance())
-        print(request.user)
+        #print(request.user)
         serializer = MessageSerializer(filtered_by_receiver, many=True)
         return Response(serializer.data)
     
     def retrieve(self,request, message_id=None, *args, **kwargs):
         if message_id is None:
             return Response({'Error': 'message id not provided'})
-        message = self.queryset.filter(pk=message_id, receiver=self.get_instance())
+        try:
+            message = self.queryset.get(pk=message_id, receiver=self.get_instance())
+        except:
+            return Response({'Error': 'Object does not exists'}, status=404)
         serializer = MessageSerializer(message)
         return Response(serializer.data, status=status.HTTP_200_OK)
     

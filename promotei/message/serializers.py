@@ -13,7 +13,6 @@ class MessageSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'sender',
-           # 'receiver',
             'contract',
             'is_read',
             'msg_content',

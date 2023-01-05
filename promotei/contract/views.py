@@ -6,6 +6,7 @@ from contract.serializers import ContractSerializer
 from rest_framework.decorators import action
 from document.utils import check_esp
 from message.utils import create_or_update_message
+from message.models import Message
 
 class CreateContract(generics.CreateAPIView):
     queryset = Contract.objects.all()
@@ -54,16 +55,22 @@ class ContractViewSet(viewsets.ViewSet):
         if contract_id is None:
             return Response({'Error': 'Contract id is not provided'}, 404)
        
-        
-        content = request.FILES['esp']
+        try:
+            content = request.FILES['esp']
+        except:
+            return Response({'Error': 'Esp not provided'})
         if check_esp(content):
             try:
                 contract = self.queryset.get(pk=contract_id)
                 if contract.is_signed == True:
                     contract.status = 'ACCEPTED'
                     # TEST receiver with request user
-                contract.save()
-                message = create_or_update_message(sender=contract.sender, receiver=contract.receiver, contract=contract)
+                    contract.save()
+                print('this line work- ', contract.renter)
+                print('this line work- ', contract.receiver)
+                
+                message = create_or_update_message(sender=contract.renter, receiver=contract.receiver, contract=contract)
+                print('this line2 work- ', message)
                 if message:
                     message.save()
             except:
