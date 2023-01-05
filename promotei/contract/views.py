@@ -118,7 +118,7 @@ class ContractViewSet(viewsets.ViewSet):
         content = contract.content
         extension = pathlib.Path(content.name).suffix
         filename_with_extension = "{0}{1}".format('Договор', extension)
-        print('contract -', content.url)
+        return Response({'url': content.url}, status=200)
 
-        return FileResponse(content.open(), as_attachment=True, filename=filename_with_extension)
+        #return FileResponse(content.open(), as_attachment=True, filename=filename_with_extension)
         
