@@ -23,3 +23,8 @@ class Contract(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     content = models.FileField()
 
+class ContractTemplate(models.Model):
+        contract_template = models.FileField()
+        created_at = models.DateTimeField(auto_now_add=True)
+        updated_at = models.DateTimeField(auto_now=True)
+
