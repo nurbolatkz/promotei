@@ -64,17 +64,14 @@ class ContractViewSet(viewsets.ViewSet):
                 contract = self.queryset.get(pk=contract_id)
                 if contract.is_signed == True:
                     contract.status = 'ACCEPTED'
-                    # TEST receiver with request user
                     contract.save()
-                print('this line work- ', contract.renter)
-                print('this line work- ', contract.receiver)
-                
-                message = create_or_update_message(sender=contract.renter, receiver=contract.receiver, contract=contract)
-                print('this line2 work- ', message)
-                if message:
-                    message.save()
             except:
                 return Response('Contract with this id not found',404)
+            
+            message = create_or_update_message(sender=contract.renter, receiver=contract.receiver, contract=contract)
+            if message:
+                message.save()
+            
         else:
             return Response('ESP does not correctly entered or check expiration date', 404)
         
@@ -94,14 +91,14 @@ class ContractViewSet(viewsets.ViewSet):
                 contract = self.queryset.get(pk=contract_id)
                 if contract.is_signed == True:
                     contract.status = 'DECLINED'
-                    #SEND_MESSAGE
-                    # TEST receiver with request user
                 contract.save()
-                message = create_or_update_message(sender=contract.sender, receiver=contract.receiver, contract=contract)
-                if message:
-                    message.save()
             except:
                 return Response('Contract with this id not found',404)
+            
+            message = create_or_update_message(sender=contract.renter, receiver=contract.receiver, contract=contract)
+            if message:
+                message.save()
+            
         else:
             return Response('ESP does not correctly entered or check expiration date', 404)
         

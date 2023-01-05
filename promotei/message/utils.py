@@ -18,14 +18,15 @@ def create_or_update_message(sender, receiver, contract):
         message =  Message.objects.get(sender=sender, contract=contract, receiver=receiver)
         if message:
             message.msg_content =  message_content
+            message.is_read = False
             message.save()
             return message
     elif contract.status == 'DECLINED':
-        message_content = f'{sender.first_name} {sender.last_name} +  вам отклонил(-а) договор'
-        message_content = f'{sender.first_name} {sender.last_name} +  вам принял(-а) договор'
-        message =  Message.objects.filter(sender=sender, contract=contract, receiver=receiver)
+        message_content = f'{sender.indentity_number.first_name} {sender.indentity_number.last_name} +  вам отклонил(-а) договор'
+        message =  Message.objects.get(sender=sender, contract=contract, receiver=receiver)
         if message:
             message.msg_content =  message_content
+            message.is_read = False
             message.save()
             return message
         
