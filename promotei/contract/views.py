@@ -8,6 +8,7 @@ from document.utils import check_esp
 from message.utils import create_or_update_message
 from django.http import FileResponse
 import pathlib
+from contract.models import ContractTemplate
 
 class CreateContract(generics.CreateAPIView):
     queryset = Contract.objects.all()
@@ -121,4 +122,9 @@ class ContractViewSet(viewsets.ViewSet):
         return Response({'url': content.url}, status=200)
 
         #return FileResponse(content.open(), as_attachment=True, filename=filename_with_extension)
-        
+    
+    def template_download(self, request, *args, **kwargs):
+        template = ContractTemplate.objects.all().order_by('created_at')
+        if template:
+            template = template[0]
+        return Response({'url': template.contract_template.url}, status=200) 
