@@ -17,7 +17,7 @@ class MessageViewSet(viewsets.ViewSet):
         return UserProfile.objects.get(user=self.request.user)
 
     def list(self, request, *args, **kwargs):
-        filtered_by_receiver = self.queryset.filter(receiver=self.get_instance())
+        filtered_by_receiver = self.queryset.filter(receiver=self.get_instance()).order_by('-created_at')
         #print(request.user)
         serializer = MessageSerializer(filtered_by_receiver, many=True)
         return Response(serializer.data)
