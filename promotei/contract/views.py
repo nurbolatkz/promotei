@@ -9,7 +9,6 @@ from message.utils import create_or_update_message
 from django.http import FileResponse
 import pathlib
 from contract.models import ContractTemplate
-from message.models import Message
 
 class CreateContract(generics.CreateAPIView):
     queryset = Contract.objects.all()
@@ -77,19 +76,12 @@ class ContractViewSet(viewsets.ViewSet):
                 contract = self.queryset.get(pk=contract_id)
             except:
                 return Response('Contract with this id not found',404)
-            try:
-                message =  Message.objects.get(contract=contract)
-            except:
-                return Response({'Error': 'Message was not correctly creact'},404)
             
             user_id = request.user.id
             
             if user_id == contract.receiver.id:
                 if contract.is_signed_by_receiver == True and contract.is_signed_by_renter == True:
                     contract.status = 'ACCEPTED'
-                    message.is_read =  True
-                    message.is_archived = True
-                contract.save()
                 message.save()
             else:
                 return Response('Contract can accept only receiver',403)
@@ -97,6 +89,8 @@ class ContractViewSet(viewsets.ViewSet):
             
             message = create_or_update_message(sender=contract.renter, receiver=contract.receiver, contract=contract)
             if message:
+                message.is_read =  True
+                message.is_archived = True
                 message.save()
             
         else:
@@ -112,35 +106,28 @@ class ContractViewSet(viewsets.ViewSet):
         if contract_id is None:
             return Response({'Error': 'Contract id is not provided'}, 404)
        
-        
-        content = request.FILES['esp']
-        if check_esp(content):
-            try:
-                contract = self.queryset.get(pk=contract_id)
-            except:
-                return Response('Contract with this id not found',404)
+        try:
+            contract = self.queryset.get(pk=contract_id)
+        except:
+            return Response('Contract with this id not found',404)
             
-            try:
-                message =  Message.objects.get(contract=contract)
-            except:
-                return Response({'Error': 'Message was not correctly creact'},404)
             
-            user_id = request.user.id
+        user_id = request.user.id
             
-            if user_id == contract.receiver.id:
-                if contract.is_signed_by_receiver == True or contract.is_signed_by_renter == True:
-                    contract.status = 'DECLINED'
-                    message.is_read =  True
-                    message.is_archived = True
+        if user_id == contract.receiver.id:
+            if contract.is_signed_by_receiver == True or contract.is_signed_by_renter == True:
+                contract.status = 'DECLINED'
+                
                 contract.save()
-                message.save()
-            else:
-                return Response('Contract can accept only receiver',403)
+        else:
+            return Response('Contract can accept only receiver',403)
             
-            message = create_or_update_message(sender=contract.renter, receiver=contract.receiver, contract=contract)
+        message = create_or_update_message(sender=contract.renter, receiver=contract.receiver, contract=contract)
             
-            if message:
-                message.save()
+        if message:
+            message.is_read =  True
+            message.is_archived = True
+            message.save()
         else:
             return Response('ESP does not correctly entered or check expiration date', 404)
         
