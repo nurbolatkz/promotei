@@ -5,7 +5,6 @@ from contract.serializers import ContractShortInfoSerializer
 
 class MessageSerializer(serializers.ModelSerializer):
     sender = UserProrfileShortInfoSerializer(read_only=True)
-    #receiver = UserProrfileShortInfoSerializer(read_only=True)
     contract = ContractShortInfoSerializer(read_only=True)
     
     class Meta:

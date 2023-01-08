@@ -12,3 +12,6 @@ class Message(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     is_read = models.BooleanField(default=False)
     is_archived = models.BooleanField(default=False)
+    
+    class Meta:
+       get_latest_by = '-created_at'
