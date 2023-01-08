@@ -9,7 +9,7 @@ from message.utils import create_or_update_message
 from django.http import FileResponse
 import pathlib
 from contract.models import ContractTemplate
-
+from message.models import Message
 
 class CreateContract(generics.CreateAPIView):
     queryset = Contract.objects.all()

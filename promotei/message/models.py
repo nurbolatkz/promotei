@@ -14,4 +14,4 @@ class Message(models.Model):
     is_archived = models.BooleanField(default=False)
     
     class Meta:
-       get_latest_by = '-created_at'
+       get_latest_by = 'created_at'
