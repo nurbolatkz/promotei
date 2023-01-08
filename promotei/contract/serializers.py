@@ -47,4 +47,12 @@ class ContractSerializer(serializers.ModelSerializer):
             message.save()
         
         return contract
-        
+
+
+class ContractShortInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contract
+        fields = [
+            'id',
+            'content'
+        ]
