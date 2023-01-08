@@ -10,6 +10,7 @@ from django.http import FileResponse
 import pathlib
 from contract.models import ContractTemplate
 
+
 class CreateContract(generics.CreateAPIView):
     queryset = Contract.objects.all()
     permission_classes = [IsAuthenticated]
@@ -29,7 +30,8 @@ class ContractViewSet(viewsets.ViewSet):
     serializer_class = ContractSerializer
     permission_classes = [IsAuthenticated]
     queryset = Contract.objects.all()
-    
+
+
     @action(detail=True, methods=['get'])
     def set_signed(self, request, contract_id=None):
         if contract_id is None:
@@ -40,17 +42,26 @@ class ContractViewSet(viewsets.ViewSet):
         if check_esp(content):
             try:
                 contract = self.queryset.get(pk=contract_id)
-                contract.is_signed = True
-                contract.status = 'SENDED'
-                contract.save()
             except:
                 return Response('Contract with this id not found',404)
+            
+            user_id = request.user.id
+            
+            if user_id == contract.renter.id:
+                contract.is_signed_by_renter = True
+                contract.status = 'SENDED'
+            elif user_id == contract.receiver.id:
+                contract.is_signed_by_receiver = True
+                contract.status= 'RECEIVED'
+            contract.save()
+            
         else:
             return Response('ESP does not correctly entered or check expiration date', 404)
         
         
         serializer = ContractSerializer(contract)
         return Response(serializer.data, 201)
+    
     
     @action(detail=True, methods=['get'])
     def set_accepted(self, request, contract_id=None):
@@ -64,11 +75,18 @@ class ContractViewSet(viewsets.ViewSet):
         if check_esp(content):
             try:
                 contract = self.queryset.get(pk=contract_id)
-                if contract.is_signed == True:
-                    contract.status = 'ACCEPTED'
-                    contract.save()
             except:
                 return Response('Contract with this id not found',404)
+            
+            user_id = request.user.id
+            
+            if user_id == contract.receiver.id:
+                if contract.is_signed_by_receiver == True and contract.is_signed_by_renter == True:
+                    contract.status = 'ACCEPTED'
+                contract.save()
+            else:
+                return Response('Contract can accept only receiver',403)
+            
             
             message = create_or_update_message(sender=contract.renter, receiver=contract.receiver, contract=contract)
             if message:
@@ -80,6 +98,7 @@ class ContractViewSet(viewsets.ViewSet):
         
         serializer = ContractSerializer(contract)
         return Response(serializer.data, 201)
+    
     
     @action(detail=True, methods=['get'])
     def set_declined(self, request, contract_id=None):
@@ -91,22 +110,28 @@ class ContractViewSet(viewsets.ViewSet):
         if check_esp(content):
             try:
                 contract = self.queryset.get(pk=contract_id)
-                if contract.is_signed == True:
-                    contract.status = 'DECLINED'
-                contract.save()
             except:
                 return Response('Contract with this id not found',404)
+            user_id = request.user.id
+            
+            if user_id == contract.receiver.id:
+                if contract.is_signed_by_receiver == True or contract.is_signed_by_renter == True:
+                    contract.status = 'DECLINED'
+                contract.save()
+            else:
+                return Response('Contract can accept only receiver',403)
             
             message = create_or_update_message(sender=contract.renter, receiver=contract.receiver, contract=contract)
+            
             if message:
                 message.save()
-            
         else:
             return Response('ESP does not correctly entered or check expiration date', 404)
         
         
         serializer = ContractSerializer(contract)
         return Response(serializer.data, 201)
+    
     
     def contract_download(self, request, contract_id, *args, **kwargs):
         if contract_id is None:
@@ -118,13 +143,14 @@ class ContractViewSet(viewsets.ViewSet):
                 return Response('Contract with this id not found',404)
         content = contract.content
         extension = pathlib.Path(content.name).suffix
-        filename_with_extension = "{0}{1}".format('Договор', extension)
+        #filename_with_extension = "{0}{1}".format('Договор', extension)
+        #return FileResponse(content.open(), as_attachment=True, filename=filename_with_extension)
         return Response({'url': content.url}, status=200)
 
-        #return FileResponse(content.open(), as_attachment=True, filename=filename_with_extension)
     
     def template_download(self, request, *args, **kwargs):
         template = ContractTemplate.objects.all().order_by('created_at')
         if template:
             template = template[0]
-        return Response({'url': template.contract_template.url}, status=200) 
+        return Response({'url': template.contract_template.url}, status=200)
+    

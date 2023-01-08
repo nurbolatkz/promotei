@@ -8,7 +8,8 @@ from message.utils import create_or_update_message
 
 class ContractSerializer(serializers.ModelSerializer):
     receiver = serializers.CharField( required=True)
-    is_signed = serializers.BooleanField(read_only=True)
+    is_signed_by_renter = serializers.BooleanField(read_only=True)
+    is_signed_by_receiver = serializers.BooleanField(read_only=True)
     status = serializers.CharField(read_only=True)
     class Meta:
         model = Contract
@@ -16,7 +17,8 @@ class ContractSerializer(serializers.ModelSerializer):
             'id',
             'receiver',
             'content',
-            'is_signed',
+            'is_signed_by_renter',
+            'is_signed_by_receiver',
             'status'
         ]
         
