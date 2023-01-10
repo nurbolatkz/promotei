@@ -6,7 +6,7 @@ from contract.models import Contract
 class Message(models.Model):
     sender = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="message_sender")
     receiver = models.ForeignKey(UserProfile,on_delete=models.CASCADE, related_name='message_receiver')
-    contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name='message_contract')
+    contract = models.OneToOneField(Contract, on_delete=models.CASCADE, related_name='message_contract')
     msg_content = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
