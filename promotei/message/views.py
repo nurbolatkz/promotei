@@ -19,7 +19,7 @@ class MessageViewSet(viewsets.ViewSet):
     def list(self, request, *args, **kwargs):
         user  = self.get_instance()
         if user.role == 'RENTER':
-            filtered_objects = self.queryset.filter(renter=user).order_by('-created_at')
+            filtered_objects = self.queryset.filter(sender=user).order_by('-created_at')
         else:
             filtered_objects = self.queryset.filter(receiver=user).order_by('-created_at')
         
