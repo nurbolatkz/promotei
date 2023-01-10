@@ -8,10 +8,8 @@ from user.models import CustomUser
 # Create your models here.
 class StatusChoices(models.TextChoices):
         SENDED = "SENDED"
-        RECEIVED = "RECEIVED"
         ACCEPTED = "ACCEPTED"
         DECLINED = "DECLINED"
-        CREATED = "CREATED"
 
 
 class Contract(models.Model):
