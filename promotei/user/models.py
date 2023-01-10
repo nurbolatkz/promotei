@@ -49,7 +49,7 @@ class CustomUserManager(BaseUserManager):
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     class UserRolesEnum(models.TextChoices):
         RENTER = 'RENTER'
-        RENT_RECEIVER = 'RENT_RECEIVER'
+        RECEIVER = 'RECEIVER'
         
         
     email = models.EmailField(_('email address'), unique=True)
