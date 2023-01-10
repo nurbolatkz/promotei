@@ -54,7 +54,6 @@ class ContractViewSet(viewsets.ViewSet):
                 contract.status = 'SENDED'
             elif user_id == contract.receiver.id:
                 contract.is_signed_by_receiver = True
-                contract.status= 'RECEIVED'
             contract.save()
             
         else:
@@ -69,31 +68,27 @@ class ContractViewSet(viewsets.ViewSet):
     def set_accepted(self, request, contract_id=None):
         if contract_id is None:
             return Response({'Error': 'Contract id is not provided'}, 404)
-       
+        
         try:
-            content = request.FILES['esp']
+            contract = self.queryset.get(pk=contract_id)
         except:
-            return Response({'Error': 'Esp not provided'})
-        if check_esp(content):
-            try:
-                contract = self.queryset.get(pk=contract_id)
-            except:
-                return Response('Contract with this id not found',404)
+            return Response('Contract with this id not found',404)
             
-            user_id = request.user.id
+        user_id = request.user.id
             
-            if user_id == contract.receiver.id:
-                if contract.is_signed_by_receiver == True and contract.is_signed_by_renter == True:
-                    contract.status = 'ACCEPTED'
-            else:
-                return Response('Contract can accept only receiver',403)
+        if user_id == contract.receiver.id:
+            if contract.is_signed_by_receiver == True and contract.is_signed_by_renter == True:
+                contract.status = 'ACCEPTED'
+                contract.save()
+        else:
+            return Response('Contract can accept only receiver',403)
             
             
-            message = create_or_update_message(sender=contract.renter, receiver=contract.receiver, contract=contract)
-            if message:
-                message.is_read =  True
-                message.is_archived = True
-                message.save()
+        message = create_or_update_message(sender=contract.renter, receiver=contract.receiver, contract=contract)
+        if message:
+            message.is_read =  True
+            message.is_archived = True
+            message.save()
             
         else:
             return Response('ESP does not correctly entered or check expiration date', 404)
@@ -118,7 +113,6 @@ class ContractViewSet(viewsets.ViewSet):
         if user_id == contract.receiver.id:
             if contract.is_signed_by_receiver == True or contract.is_signed_by_renter == True:
                 contract.status = 'DECLINED'
-                
                 contract.save()
         else:
             return Response('Contract can accept only receiver',403)
