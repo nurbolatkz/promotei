@@ -136,6 +136,8 @@ class UserProrfileShortInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = [
+            
+                  'id',
                   'first_name',
                   'indentity_number', 
                   'first_name',
