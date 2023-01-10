@@ -11,7 +11,7 @@ class Message(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_read = models.BooleanField(default=False)
-    is_archived = models.BooleanField(default=False)
+    is_sended = models.BooleanField(default=True)
     
     class Meta:
        get_latest_by = 'created_at'
