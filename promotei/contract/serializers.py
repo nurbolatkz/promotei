@@ -54,5 +54,6 @@ class ContractShortInfoSerializer(serializers.ModelSerializer):
         model = Contract
         fields = [
             'id',
-            'content'
+            'content',
+            'status'
         ]
