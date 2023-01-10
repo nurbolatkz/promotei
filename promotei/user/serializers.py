@@ -14,6 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
         
         
 class UserProfileSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(source = 'user.id')
     phone_number = serializers.CharField(source='user.phone_number')
     email = serializers.EmailField(source='user.email')
     role = serializers.CharField(source='user.role')
@@ -28,6 +29,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = [
+                  'id',
                   'first_name',
                   'indentity_number', 
                   'first_name',
