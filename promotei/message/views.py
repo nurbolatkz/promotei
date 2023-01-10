@@ -17,9 +17,13 @@ class MessageViewSet(viewsets.ViewSet):
         return UserProfile.objects.get(user=self.request.user)
 
     def list(self, request, *args, **kwargs):
-        filtered_by_receiver = self.queryset.filter(receiver=self.get_instance()).order_by('-created_at')
-        #print(request.user)
-        serializer = MessageSerializer(filtered_by_receiver, many=True)
+        user  = self.get_instance()
+        if user.role == 'RENTER':
+            filtered_objects = self.queryset.filter(renter=user).order_by('-created_at')
+        else:
+            filtered_objects = self.queryset.filter(receiver=user).order_by('-created_at')
+        
+        serializer = MessageSerializer(filtered_objects, many=True)
         return Response(serializer.data)
     
     def retrieve(self,request, message_id=None, *args, **kwargs):
