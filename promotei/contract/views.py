@@ -35,9 +35,11 @@ class ContractViewSet(viewsets.ViewSet):
     def set_signed(self, request, contract_id=None):
         if contract_id is None:
             return Response({'Error': 'Contract id is not provided'}, 404)
-       
         
-        content = request.FILES['esp']
+        try:
+            content = request.FILES['esp']
+        except:
+            return Response('ESP is not provided', 404)
         if check_esp(content):
             try:
                 contract = self.queryset.get(pk=contract_id)
@@ -46,6 +48,7 @@ class ContractViewSet(viewsets.ViewSet):
             
             user_id = request.user.id
             
+            print(user_id, contract.receiver.id)
             if user_id == contract.renter.id:
                 contract.is_signed_by_renter = True
                 contract.status = 'SENDED'
@@ -82,7 +85,6 @@ class ContractViewSet(viewsets.ViewSet):
             if user_id == contract.receiver.id:
                 if contract.is_signed_by_receiver == True and contract.is_signed_by_renter == True:
                     contract.status = 'ACCEPTED'
-                message.save()
             else:
                 return Response('Contract can accept only receiver',403)
             
@@ -95,7 +97,6 @@ class ContractViewSet(viewsets.ViewSet):
             
         else:
             return Response('ESP does not correctly entered or check expiration date', 404)
-        
         
         serializer = ContractSerializer(contract)
         return Response(serializer.data, 201)
