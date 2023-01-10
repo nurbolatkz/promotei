@@ -87,11 +87,8 @@ class ContractViewSet(viewsets.ViewSet):
         message = create_or_update_message(sender=contract.renter, receiver=contract.receiver, contract=contract)
         if message:
             message.is_read =  True
-            message.is_archived = True
             message.save()
-            
-        else:
-            return Response('ESP does not correctly entered or check expiration date', 404)
+      
         
         serializer = ContractSerializer(contract)
         return Response(serializer.data, 201)
@@ -121,11 +118,7 @@ class ContractViewSet(viewsets.ViewSet):
             
         if message:
             message.is_read =  True
-            message.is_archived = True
             message.save()
-        else:
-            return Response('ESP does not correctly entered or check expiration date', 404)
-        
         
         serializer = ContractSerializer(contract)
         return Response(serializer.data, 201)
